@@ -1,0 +1,3 @@
+BLANK_COLOR = 0
+BLUE = 255
+WHITE = 2**24
