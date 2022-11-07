@@ -41,6 +41,22 @@ def colorPatch(strip:PixelStrip, offset:int, length:int, color:int, blank:bool=F
         strip.setPixelColor(k,color)
     strip.show()
     return color
+    
+def noisy(strip:PixelStrip):
+    n = strip.getPixels().size
+    for p in range(0,n):
+        strip.setPixelColor(p, randomColor())
+    strip.show()
+    
+def randomSnake(strip:PixelStrip, advance:int=1):
+    n = strip.getPixels().size
+    rotatePixels(strip, advance)
+    if advance>=0:
+        for p in range(0,advance%n):
+            strip.setPixelColor(p, randomColor())
+    else:
+        for p in range(n+advance,n):
+            strip.setPixelColor(p, randomColor())
 
 def rotatePixels(strip:PixelStrip, k:int):
     pixels = getPixels(strip)
@@ -57,8 +73,9 @@ if __name__ == '__main__':
     try:
         colorPatch(strip, offset=20, length=10, color=Color(0,0,255))
         while 1:
-            rotatePixels(strip, -5)
-            #time.sleep(0.1)
+            #randomSnake(strip, advance=-1)
+            noisy(strip)
+            time.sleep(0.2)
     except KeyboardInterrupt:
         blankAll(strip)
         print('goodbye')
