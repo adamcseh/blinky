@@ -1,22 +1,46 @@
-class Color:
-	def __init__(self, color:str='', intensity:float=0.0):
-		if color.upper()=="HUPIKEK":
-			self.green = 10
-			self.red = 25
-			self.blue = 255
-		elif color.upper()=="WHITE":
-			self.green = 255
-			self.red = 255
-			self.blue = 255
-		else:
-			self.green = 0.0
-			self.red = 0.0
-			self.blue = 0.0
-		self.intensity = intensity
-	def getColorCode(self):
-		return int(self.intensity/100*self.blue+self.intensity/100*self.red*2**8+self.intensity/100*self.green*2**16)
-	
-c = Color("hupikek", intensity=100)
-print(c.getColorCode())
-c = Color("hupikek", intensity=1)
-print(c.getColorCode())
+#! /usr/bin/python3
+import pickle
+import csv
+
+def noramlizeCalData(cal_data, verbose:bool=False):
+        # find upper left, (0,0)
+        # find lower right (1,1)
+        x_min = cal_data[0][1]
+        y_min = cal_data[0][2]
+        x_max = cal_data[0][1]
+        y_max = cal_data[0][2]
+        for p in cal_data:
+                if verbose:
+                        print(p)
+                if p[1] < x_min:
+                        x_min = p[1]
+                if p[2] < y_min:
+                        y_min = p[2]
+                if p[1] > x_max:
+                        x_max = p[1]
+                if p[2] > y_max:
+                        y_max = p[2]
+        if verbose:
+                print("x_min: ", x_min)
+                print("x_max: ", x_max)
+                print("y_min: ", y_min)
+                print("y_max: ", y_max)
+        normalized = []
+        for p in cal_data:
+                n = (p[0], (p[1]-x_min)/(x_max-x_min), (p[2]-y_min)/(y_max-y_min))
+                normalized.append(n)
+                if verbose:
+                        print(n)
+        return normalized
+        
+if __name__=="__main__":
+        cal_data = None
+        with open('cam/cal_data.pickle', 'rb') as pickle_file:
+                cal_data = pickle.load(pickle_file)
+        
+        with open('cam/cal_data.csv', 'w') as csv_file:
+                c = noramlizeCalData(cal_data, verbose=True)
+                csv_writer = csv.writer(csv_file, delimiter=";")
+                for p in c:
+                        csv_writer.writerow(p)
+        
