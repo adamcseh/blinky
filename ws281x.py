@@ -49,37 +49,37 @@ class LEDstrip():
             self.strip.setPixelColor(n, WHITE)
         self.strip.show()
     
-def colorPatch(strip:PixelStrip, offset:int, length:int, color:int, blank:bool=False):
-    if blank:
-        blankAll()
-    for k in range(offset, offset+length):
-        strip.setPixelColor(k,color)
-    strip.show()
-    return color
+# def colorPatch(strip:PixelStrip, offset:int, length:int, color:int, blank:bool=False):
+#     if blank:
+#         strip.blankAll()
+#     for k in range(offset, offset+length):
+#         strip.setPixelColor(k,color)
+#     strip.show()
+#     return color
     
-def noisy(strip:PixelStrip):
-    n = strip.getPixels().size
-    for p in range(0,n):
-        strip.setPixelColor(p, randomColor())
-    strip.show()
+# def noisy(strip:PixelStrip):
+#     n = strip.getPixels().size
+#     for p in range(0,n):
+#         strip.setPixelColor(p, randomColor())
+#     strip.show()
     
-def randomSnake(strip:PixelStrip, advance:int=1):
-    n = strip.getPixels().size
-    rotatePixels(strip, advance)
-    if advance>=0:
-        for p in range(0,advance%n):
-            strip.setPixelColor(p, randomColor())
-    else:
-        for p in range(n+advance,n):
-            strip.setPixelColor(p, randomColor())
+# def randomSnake(strip:PixelStrip, advance:int=1):
+#     n = strip.getPixels().size
+#     rotatePixels(strip, advance)
+#     if advance>=0:
+#         for p in range(0,advance%n):
+#             strip.setPixelColor(p, randomColor())
+#     else:
+#         for p in range(n+advance,n):
+#             strip.setPixelColor(p, randomColor())
 
-def rotatePixels(strip:PixelStrip, k:int):
-    pixels = getPixels(strip)
-    n = len(pixels)
-    for p in range(0,n):
-        strip.setPixelColor(p, pixels[(p-k)%n])
-    strip.show()
-    return k
+# def rotatePixels(strip:PixelStrip, k:int):
+#     pixels = getPixels(strip)
+#     n = len(pixels)
+#     for p in range(0,n):
+#         strip.setPixelColor(p, pixels[(p-k)%n])
+#     strip.show()
+#     return k
 
 if __name__ == '__main__':
     #strip = PixelStrip(LED_COUNT, LED_PIN, LED_FREQ_HZ, LED_DMA, LED_INVERT, LED_BRIGHTNESS, LED_CHANNEL)
