@@ -9,6 +9,7 @@ class MatrixDisplay():
         self.content = np.zeros((y_size, x_size), dtype=int)
         self.led_strip = led_strip
         self.points = loadCalData(cal_file) # list of (LED_number, x, y)
+        
         if verbose:
             print(self.points)
     def _loadContent(self, new_content, verbose:bool=False):
@@ -20,7 +21,7 @@ class MatrixDisplay():
                 self.content[y][x] = new_content[y][x]
         if verbose:
             print(self.content)
-    def _mapContent(self, verbose:bool=False):
+    def _mapContent(self):
         leds = []
         for _x in range(0, self.x_size):  # iterate over the ideal matrix display points
             for _y in range(0, self.y_size):  
@@ -38,6 +39,12 @@ class MatrixDisplay():
                 if not led_index_already_registered:
                     leds.append((led_index,int(self.content[_y][_x])))
         return leds
+    def _mapContent2(self):
+        leds=[]
+        x_size = np.shape(self.content)[1]  # this many columns to map to LEDS
+        y_size = np.shape(self.content)[0]  # this many rows
+
+
     def _displayContent(self, leds):
         self.led_strip.blankAll()
         self.led_strip.setPixels(leds)
