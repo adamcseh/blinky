@@ -1,28 +1,48 @@
 #! /usr/bin/python3
 import csv
 import numpy as np
+from matplotlib import pyplot as plt
 from PIL import Image
 from blinky_camera import takeCalImage, findBrightestSpot, addCrossMark
 from ws281x import LEDstrip
 
 def manualCal(ledstrip:LEDstrip, save_images:bool=False, verbose:bool=False):
     cal_data = []
-    for k in range(0, 300):
-        print("calibrating LED position:", k)
-        ledstrip.single(k)
-        img = takeCalImage()
-        x,y,i = findBrightestSpot(img)
-        print(x, y, i)
-        print('wanna discard?')
-        i = input() 
-        if not i:
-            cal_data.append((k,x,y))
-            if save_images:
-                img = addCrossMark(img, x,y,size=5)
-                filename='cal_'+str(k)+'_x'+str(x)+'_y'+str(y)+'.png'
-                saveImage(img, 'cam/cal/'+filename)
-        print(cal_data)
-    normalized_cal_data = noramlizeCalData(cal_data, verbose=verbose)
+    try:
+        for k in range(0, 300):
+            print("calibrating LED position:", k)
+            ledstrip.single(k)
+            img = takeCalImage()
+            x,y,i = findBrightestSpot(img)
+            print(x, y, i)
+            print('wanna discard?')
+            i = input() 
+            if not i:
+                cal_data.append((k,x,y))
+                if save_images:
+                    img = addCrossMark(img, x,y,size=5)
+                    filename='cal_'+str(k)+'_x'+str(x)+'_y'+str(y)+'.png'
+                    saveImage(img, 'cam/cal/'+filename)
+    except KeyboardInterrupt:
+        pass
+    print(cal_data)
+    normalized_cal_data = normalizeCalData(cal_data, verbose=verbose)
+    return normalized_cal_data
+
+def autoCal(ledstrip:LEDstrip, threshold:int):
+    cal_data = []
+    try:
+        for k in range(0, 300):
+            print("calibrating LED position:", k)
+            ledstrip.single(k)
+            img = takeCalImage()
+            x,y,i = findBrightestSpot(img)
+            print(x, y, i)
+            if i>=threshold:
+                cal_data.append((k,x,y))
+    except KeyboardInterrupt:
+        pass
+    normalized_cal_data = normalizeCalData(cal_data)
     return normalized_cal_data
 
 def saveImage(img_array, filename, verbose=False):
@@ -36,7 +56,7 @@ def loadImage(filename:str):
     i = np.asarray(image).astype(np.uint8)
     return np.asarray(image)
 
-def noramlizeCalData(cal_data, verbose:bool=False):
+def normalizeCalData(cal_data, verbose:bool=False):
     # find upper left (0,0) and lower right (1,1)
     x_min = cal_data[0][1]
     y_min = cal_data[0][2]
@@ -82,10 +102,20 @@ def loadCalData(filename:str):
             c.append((int(row[0]), float(row[1]), float(row[2])))
     return c
 
+def checkCalibration(cal_file:str):
+    f = cal_file.split(".")[0]
+    cal_data = loadCalData(cal_file)
+    l, x, y = zip(*cal_data)
+    fig, ax = plt.subplots()
+    ax.scatter(np.asarray(x),-1*np.asarray(y))
+    for k in range(len(x)):
+        ax.annotate(str(l[k]), (x[k], -1*y[k]))
+    plt.savefig(f+"_check.png")
+
 if __name__ == "__main__":
-    cal_file = 'cam/front_cal.csv'
+    cal_file = 'cam/cal/front_cal.csv'
     ledstrip = LEDstrip()
-    normalized_cal_data = manualCal(ledstrip)
+    #normalized_cal_data = manualCal(ledstrip)
+    normalized_cal_data = autoCal(ledstrip, threshold=470)
     saveCalData(normalized_cal_data, cal_file)
-    c = loadCalData(cal_file)
-    print(c)
+    checkCalibration(cal_file)
