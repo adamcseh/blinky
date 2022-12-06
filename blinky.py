@@ -8,7 +8,8 @@ from fancy import SnowFall, MatrixDisplay
 
 def generateBoard(text:str, y_size:int):
     b = np.zeros((y_size,1))
-    for letter in text.replace(' ', '_').upper():
+    t = text.upper().replace(' ', '_')
+    for letter in t:
         b = np.hstack((b,LETTERS[letter]))
         b = np.hstack((b,LETTERS['single_separator']))
     length = np.shape(b)[1]
@@ -30,19 +31,18 @@ if __name__=="__main__":
         cal_file = 'cam/cal/front_cal.csv'
         x_size = 11
         y_size = 5
-        front_matrix = MatrixDisplay(x_size=x_size, y_size=y_size, led_strip=ledstrip, cal_file=cal_file, verbose=False)
-        msg = "hello silabs"
+        front_matrix = MatrixDisplay(x_size=x_size, y_size=y_size, led_strip=ledstrip, cal_file=cal_file)
+        msg = "merry xmas silabs "
         board, length = generateBoard(msg, y_size)
-        print(np.shape(board))
         iteration = 0
         while 1:
             c = getBoardSubset(board, iteration, x_size)
             c = makeColor(c, WHITE)
-            front_matrix._loadContent(c)
-            leds = front_matrix._mapContent()
-            front_matrix._displayContent(leds)
+            front_matrix.loadContent(c)
+            leds = front_matrix.mapContent2()
+            front_matrix.displayContent(leds)
             iteration+=1
-            time.sleep(0.3)
+            time.sleep(0.07)
         #s = SnowFall(x_size=13, y_size=5, intensity=2)
         #while 1:
         #    c = makeBlue(s.advance())

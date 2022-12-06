@@ -29,7 +29,7 @@ class LEDstrip():
         return pixels
     def setPixels(self, pixels:list):
         for p in pixels:
-                self.strip.setPixelColor(p[0], p[1])
+            self.strip.setPixelColor(p[0], p[1])
     def show(self):
         self.strip.show()
     def oneColorAll(self, color:int):
