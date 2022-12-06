@@ -103,10 +103,28 @@ class SnowFall():
         self.intensity = intensity
         self.snapshot = np.zeros((y_size, x_size), dtype=int)
     def advance(self):
-        for row in range(0, self.y_size-1):
+        for row in range(0, self.y_size-1):  # rotate snapshot
             self.snapshot[self.y_size-row-1][:] = self.snapshot[self.y_size-row-2][:]
-        self.snapshot[0][:] = np.zeros(self.x_size, dtype=int)
-        for k in range(0, self.intensity):
+        self.snapshot[0][:] = np.zeros(self.x_size, dtype=int)  # clear first row
+        for _ in range(0, self.intensity):  # generate new first row
             self.snapshot[0][np.random.randint(low=0,high=self.x_size)] = 1
         return self.snapshot
             
+class RainbowSweep():
+    def __init__(self):
+        pass
+    def _wheel(self, pos): #Generate rainbow colors across 0-255 positions
+        if pos < 85:
+            return Color(pos * 3, 255 - pos * 3, 0)
+        elif pos < 170:
+            pos -= 85
+            return Color(255 - pos * 3, 0, pos * 3)
+        else:
+            pos -= 170
+            return Color(0, pos * 3, 255 - pos * 3)
+    def advance(self):
+        leds = []
+        for j in range(256):
+            for i in range(0, 300):
+                leds.append((int(i), self._wheel((i + j) % 255)))
+        return leds
